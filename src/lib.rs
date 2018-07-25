@@ -167,6 +167,8 @@
         missing_debug_implementations,
         unsafe_code)]
 
+// re-export so users of our macro have a stable way to import the standard
+// library (as `$crate::_core`).
 #[doc(hidden)]
 pub extern crate core as _core;
 
@@ -203,6 +205,8 @@ pub trait SumType {
     /// Is the underlying variant an instance of `T`?
     fn variant_is<T: Any>(&self) -> bool;
 }
+
+// If you're reading this... I'm sorry.
 
 #[cfg(not(feature = "try_from"))]
 #[doc(hidden)]
