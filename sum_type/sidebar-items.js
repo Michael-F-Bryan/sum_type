@@ -1,0 +1,1 @@
+initSidebarItems({"macro":[["sum_type","The entire point."]],"trait":[["SumType","Various methods for introspection and dynamic typing."]]});
