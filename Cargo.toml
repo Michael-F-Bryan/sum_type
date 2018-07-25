@@ -6,5 +6,9 @@ authors = ["Michael Bryan <michaelfbryan@gmail.com>"]
 [dependencies]
 
 [features]
-default = ["try_from"]
+default = []
 try_from = []
+generated_example = []
+
+[package.metadata.docs.rs]
+all-features = true
