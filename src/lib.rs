@@ -1,4 +1,4 @@
-//! A convenience macro for creating wrapper enum which may be one of several
+//! A convenience macro for creating a wrapper enum which may be one of several
 //! distinct types. In type theory, this is often referred to as a [sum type].
 //!
 //! This crate will work with `no_std` code.
