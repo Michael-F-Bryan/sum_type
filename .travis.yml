@@ -3,8 +3,9 @@ cache: cargo
 
 matrix:
   include:
-    - env: FEATURES=""
-      rust: stable
+    - rust: 1.15.0
+
+    - rust: stable
 
     - env: FEATURES="--all-features"
       rust: nightly

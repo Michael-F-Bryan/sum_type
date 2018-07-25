@@ -201,7 +201,8 @@ pub struct InvalidType {
     pub actual_variant: &'static str,
     /// All possible variants.
     pub all_variants: &'static [&'static str],
-    __non_exhaustive: ()
+    #[doc(hidden)]
+    pub __non_exhaustive: ()
 }
 
 /// Various methods for introspection and dynamic typing.
@@ -249,7 +250,7 @@ macro_rules! __sum_type_try_from {
                         Err($crate::InvalidType {
                             expected_variant: stringify!($name),
                             actual_variant: variant,
-                            variants: variants,
+                            all_variants: variants,
                             __non_exhaustive: (),
                         })
                     }
@@ -410,7 +411,7 @@ macro_rules! sum_type {
 #[allow(missing_docs)]
 pub mod generated_example {
     sum_type! {
-        #[derive(Debug, Clone, PartialEq)]
+        #[derive(Debug, Copy, Clone, PartialEq)]
         pub enum MySumType {
             /// The first variant.
             First(u32),
