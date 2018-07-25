@@ -1,0 +1,14 @@
+language: rust
+cache: cargo
+
+matrix:
+  include:
+    - env: FEATURES=""
+      rust: stable
+
+    - env: FEATURES="--all-features"
+      rust: nightly
+
+script:
+  - cargo build --verbose $FEATURES
+  - cargo test --verbose $FEATURES
