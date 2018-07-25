@@ -1,6 +1,8 @@
 //! A convenience macro for creating wrapper enum which may be one of several
 //! distinct types. In type theory, this is often referred to as a [sum type].
 //!
+//! This crate will work with `no_std` code.
+//!
 //! # Examples
 //! 
 //! Using the `sum_type!()` macro is rather straightforward. You just define a
@@ -38,8 +40,8 @@
 //!
 //! ```rust
 //! # #![cfg_attr(feature = "try_from", feature(try_from))]
-//! #[macro_use]
-//! extern crate sum_type;
+//! # #[macro_use]
+//! # extern crate sum_type;
 //! use sum_type::SumType;
 //! # sum_type! { #[derive(Debug, Clone, PartialEq)] pub enum MySumType {
 //! #         First(u32), Second(String), Third(Vec<u8>), } }
@@ -89,6 +91,38 @@
 //!    = note: this error originates in a macro outside of the current crate
 //! ```
 //!
+//! Sum types containing generics, including lifetimes, or which are using 
+//! visibility modifiers (e.g. `pub(crate)`) aren't (yet!) supported. That 
+//! means this will fail:
+//!
+//! ```rust,compile_fail
+//! # #![cfg_attr(feature = "try_from", feature(try_from))]
+//! # fn main() {}
+//! # #[macro_use]
+//! # extern crate sum_type;
+//! sum_type!{
+//!     TypeWithLifetime<'a> {
+//!         First(&'a str),
+//!         Second(usize),
+//!     }
+//! }
+//! ```
+//!
+//! And so will this:
+//!
+//! ```rust,compile_fail
+//! # #![cfg_attr(feature = "try_from", feature(try_from))]
+//! # fn main() {}
+//! # #[macro_use]
+//! # extern crate sum_type;
+//! sum_type!{
+//!     pub(crate) ModifiedVisibility {
+//!         First(u32),
+//!         Second(String),
+//!     }
+//! }
+//! ```
+//!
 //! # Feature Flags
 //!
 //! The `try_from` feature flag (disabled by default) will implement `TryFrom`
@@ -119,6 +153,9 @@
 //! # }
 //! # #[cfg(not(feature = "try_from"))] fn main() {}
 //! ```
+//!
+//! The `generated_example` feature flag will create an example of our 
+//! `MySumType` which can be viewed using `rustdoc`.
 //!
 //! [sum type]: https://www.schoolofhaskell.com/school/to-infinity-and-beyond/pick-of-the-week/sum-types
 //! [`SumType`]: trait.SumType.html
