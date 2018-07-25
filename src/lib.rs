@@ -35,6 +35,23 @@
 //! # }
 //! ```
 //!
+//! You can also be lazy and omit the variant name. This will name the variant
+//! the same thing as its type.
+//!
+//! ```rust
+//! # #![cfg_attr(feature = "try_from", feature(try_from))]
+//! # #[macro_use]
+//! # extern crate sum_type;
+//! sum_type!{
+//!     pub enum Lazy {
+//!         f32, u32, String,
+//!     }
+//! }
+//! # fn main() {
+//! let s = Lazy::String("Hello World!".to_string());
+//! # }
+//! ```
+//!
 //! The [`SumType`] trait is also implemented, allowing a basic level of 
 //! introspection and dynamic typing.
 //!
@@ -362,6 +379,28 @@ macro_rules! sum_type {
         }
 
         __sum_type_impls!($name, $( $var_name => $var_ty),*);
+    };
+
+    // "lazy" variations which reuse give the variant the same name as its type.
+    (
+        $( #[$outer:meta] )* 
+        pub enum $name:ident { 
+            $(
+                $( #[$inner:meta] )*
+                $var_name:ident,
+                )*
+        }) => {
+            sum_type!($(#[$outer])* pub enum $name { $( $(#[$inner])* $var_name($var_name), )* });
+    };
+    (
+        $( #[$outer:meta] )* 
+        enum $name:ident { 
+            $(
+                $( #[$inner:meta] )*
+                $var_name:ident($var_ty:ty),
+                )*
+        }) => {
+            sum_type!($(#[$outer])* enum $name { $( $(#[$inner])* $var_name($var_name), )* });
     };
 }
 
