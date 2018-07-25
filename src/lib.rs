@@ -235,12 +235,12 @@ macro_rules! __sum_type_try_from { ($($dont_care:tt)*) => ( ) }
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __sum_type_try_from {
-    ($enum_name:ident, $( $name:ident => $type:ty ),*) => {
+    ($enum_name:ident, $( $name:ident => $variant_type:ty ),*) => {
        $(
-            impl $crate::_core::convert::TryFrom<$enum_name> for $type {
+            impl $crate::_core::convert::TryFrom<$enum_name> for $variant_type {
                 type Error = $crate::InvalidType;
 
-                fn try_from(other: $enum_name) -> Result<$type, Self::Error> {
+                fn try_from(other: $enum_name) -> Result<$variant_type, Self::Error> {
                     let variant = $crate::SumType::variant(&other);
                     let variants = $crate::SumType::variants(&other);
 
@@ -264,10 +264,10 @@ macro_rules! __sum_type_try_from {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __sum_type_from {
-    ($enum_name:ident, $( $name:ident => $type:ty ),*) => {
+    ($enum_name:ident, $( $name:ident => $variant_type:ty ),*) => {
        $(
-            impl From<$type> for $enum_name {
-                fn from(other: $type) -> $enum_name {
+            impl From<$variant_type> for $enum_name {
+                fn from(other: $variant_type) -> $enum_name {
                     $enum_name::$name(other)
                 }
             }
@@ -278,7 +278,7 @@ macro_rules! __sum_type_from {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __sum_type_trait {
-    ($enum_name:ident, $( $name:ident => $type:ty ),*) => {
+    ($enum_name:ident, $( $name:ident => $variant_type:ty ),*) => {
         impl $crate::SumType for $enum_name {
             fn variants(&self) -> &'static [ &'static str] {
                 &[
@@ -324,21 +324,21 @@ macro_rules! __sum_type_trait {
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __assert_multiple_variants {
-    ($enum_name:ident, $name:ident => $type:ty) => {
+    ($enum_name:ident, $name:ident => $variant_type:ty) => {
         compile_error!(concat!("The `", stringify!($enum_name), "` type must have more than one variant"));
     };
-    ($enum_name:ident, $( $name:ident => $type:ty ),*) => {};
+    ($enum_name:ident, $( $name:ident => $variant_type:ty ),*) => {};
 }
 
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __sum_type_impls {
-    ($enum_name:ident, $( $name:ident => $type:ty ),*) => (
-        __assert_multiple_variants!($enum_name, $( $name => $type ),*);
+    ($enum_name:ident, $( $name:ident => $variant_type:ty ),*) => (
+        __assert_multiple_variants!($enum_name, $( $name => $variant_type ),*);
 
-        __sum_type_from!($enum_name, $($name => $type),*);
-        __sum_type_try_from!($enum_name, $($name => $type),*);
-        __sum_type_trait!($enum_name, $($name => $type),*);
+        __sum_type_from!($enum_name, $($name => $variant_type),*);
+        __sum_type_try_from!($enum_name, $($name => $variant_type),*);
+        __sum_type_trait!($enum_name, $($name => $variant_type),*);
     )
 }
 
