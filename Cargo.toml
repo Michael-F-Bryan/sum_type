@@ -1,0 +1,10 @@
+[package]
+name = "sum_type"
+version = "0.1.0"
+authors = ["Michael Bryan <michaelfbryan@gmail.com>"]
+
+[dependencies]
+
+[features]
+default = ["try_from"]
+try_from = []
