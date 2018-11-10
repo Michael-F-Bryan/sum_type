@@ -3,8 +3,8 @@ cache: cargo
 
 matrix:
   include:
-    # Required for the `compile_fail` attribute on doc-comment examples
-    - rust: 1.22.0
+    # Required for the `$crate::helper_macro!()` syntax
+    - rust: 1.30.0
 
     - rust: stable
 
