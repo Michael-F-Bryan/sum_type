@@ -4,12 +4,12 @@
 //! This crate will work with `no_std` code.
 //!
 //! # Examples
-//! 
+//!
 //! Using the `sum_type!()` macro is rather straightforward. You just define a
 //! normal `enum` inside it and the macro will automatically add a bunch of
 //! handy trait implementations.
 //!
-//! For convenience, all attributes are passed through and the macro will 
+//! For convenience, all attributes are passed through and the macro will
 //! derive `From` for each variant.
 //!
 //! ```rust
@@ -52,7 +52,7 @@
 //! # }
 //! ```
 //!
-//! The [`SumType`] trait is also implemented, allowing a basic level of 
+//! The [`SumType`] trait is also implemented, allowing a basic level of
 //! introspection and dynamic typing.
 //!
 //! ```rust
@@ -108,8 +108,8 @@
 //!    = note: this error originates in a macro outside of the current crate
 //! ```
 //!
-//! Sum types containing generics, including lifetimes, or which are using 
-//! visibility modifiers (e.g. `pub(crate)`) aren't (yet!) supported. That 
+//! Sum types containing generics, including lifetimes, or which are using
+//! visibility modifiers (e.g. `pub(crate)`) aren't (yet!) supported. That
 //! means this will fail:
 //!
 //! ```rust,compile_fail
@@ -171,7 +171,7 @@
 //! # #[cfg(not(feature = "try_from"))] fn main() {}
 //! ```
 //!
-//! The `generated_example` feature flag will create an example of our 
+//! The `generated_example` feature flag will create an example of our
 //! `MySumType` which can be viewed using `rustdoc`.
 //!
 //! [sum type]: https://www.schoolofhaskell.com/school/to-infinity-and-beyond/pick-of-the-week/sum-types
@@ -179,10 +179,12 @@
 
 #![no_std]
 #![cfg_attr(feature = "try_from", feature(try_from))]
-#![deny(missing_docs, 
-        missing_copy_implementations, 
-        missing_debug_implementations,
-        unsafe_code)]
+#![deny(
+    missing_docs,
+    missing_copy_implementations,
+    missing_debug_implementations,
+    unsafe_code
+)]
 
 // re-export so users of our macro have a stable way to import the standard
 // library (as `$crate::_core`).
@@ -202,7 +204,7 @@ pub struct InvalidType {
     /// All possible variants.
     pub all_variants: &'static [&'static str],
     #[doc(hidden)]
-    pub __non_exhaustive: ()
+    pub __non_exhaustive: (),
 }
 
 /// Various methods for introspection and dynamic typing.
@@ -229,7 +231,9 @@ pub trait SumType {
 #[cfg(not(feature = "try_from"))]
 #[doc(hidden)]
 #[macro_export]
-macro_rules! __sum_type_try_from { ($($dont_care:tt)*) => ( ) }
+macro_rules! __sum_type_try_from {
+    ($($dont_care:tt)*) => {};
+}
 
 #[cfg(feature = "try_from")]
 #[doc(hidden)]
@@ -294,7 +298,7 @@ macro_rules! __sum_type_trait {
                 }
             }
 
-            fn downcast_ref<T: $crate::_core::any::Any>(&self) -> Option<&T> { 
+            fn downcast_ref<T: $crate::_core::any::Any>(&self) -> Option<&T> {
                 use $crate::_core::any::Any;
 
                 match *self {
@@ -304,7 +308,7 @@ macro_rules! __sum_type_trait {
                 }
             }
 
-            fn downcast_mut<T: $crate::_core::any::Any>(&mut self) -> Option<&mut T> { 
+            fn downcast_mut<T: $crate::_core::any::Any>(&mut self) -> Option<&mut T> {
                 use $crate::_core::any::Any;
 
                 match *self {
@@ -325,7 +329,11 @@ macro_rules! __sum_type_trait {
 #[macro_export]
 macro_rules! __assert_multiple_variants {
     ($enum_name:ident, $name:ident => $variant_type:ty) => {
-        compile_error!(concat!("The `", stringify!($enum_name), "` type must have more than one variant"));
+        compile_error!(concat!(
+            "The `",
+            stringify!($enum_name),
+            "` type must have more than one variant"
+        ));
     };
     ($enum_name:ident, $( $name:ident => $variant_type:ty ),*) => {};
 }
@@ -346,8 +354,8 @@ macro_rules! __sum_type_impls {
 #[macro_export]
 macro_rules! sum_type {
     (
-        $( #[$outer:meta] )* 
-        pub enum $name:ident { 
+        $( #[$outer:meta] )*
+        pub enum $name:ident {
             $(
                 $( #[$inner:meta] )*
                 $var_name:ident($var_ty:ty),
@@ -364,8 +372,8 @@ macro_rules! sum_type {
         $crate::__sum_type_impls!($name, $( $var_name => $var_ty),*);
     };
     (
-        $( #[$outer:meta] )* 
-        enum $name:ident { 
+        $( #[$outer:meta] )*
+        enum $name:ident {
             $(
                 $( #[$inner:meta] )*
                 $var_name:ident($var_ty:ty),
@@ -384,8 +392,8 @@ macro_rules! sum_type {
 
     // "lazy" variations which reuse give the variant the same name as its type.
     (
-        $( #[$outer:meta] )* 
-        pub enum $name:ident { 
+        $( #[$outer:meta] )*
+        pub enum $name:ident {
             $(
                 $( #[$inner:meta] )*
                 $var_name:ident,
@@ -394,8 +402,8 @@ macro_rules! sum_type {
             $crate::sum_type!($(#[$outer])* pub enum $name { $( $(#[$inner])* $var_name($var_name), )* });
     };
     (
-        $( #[$outer:meta] )* 
-        enum $name:ident { 
+        $( #[$outer:meta] )*
+        enum $name:ident {
             $(
                 $( #[$inner:meta] )*
                 $var_name:ident($var_ty:ty),
@@ -405,6 +413,105 @@ macro_rules! sum_type {
     };
 }
 
+/// Execute an operation on each enum variant.
+///
+/// This macro is short-hand for matching on each variant in an enum and
+/// performing the same operation to each.
+///
+/// It will expand to roughly the following:
+///
+/// ```rust
+/// sum_type::sum_type! {
+///     #[derive(Debug, PartialEq)]
+///     pub enum Foo {
+///         First(u32),
+///         Second(f64),
+///         Third(String),
+///     }
+/// }
+///
+/// let third = Foo::Third(String::from("Hello World"));
+///
+/// let got = match third {
+///     Foo::First(ref item) => item.to_string(),
+///     Foo::Second(ref item) => item.to_string(),
+///     Foo::Third(ref item) => item.to_string(),
+/// };
+/// ```
+///
+/// # Examples
+///
+/// ```rust
+/// sum_type::sum_type! {
+///     #[derive(Debug, PartialEq)]
+///     pub enum Foo {
+///         First(u32),
+///         Second(f64),
+///         Third(String),
+///     }
+/// }
+///
+/// let mut third = Foo::Third(String::from("Hello World"));
+///
+/// // Execute some operation on each variant (skipping Second) and get the
+/// // return value
+/// let mut got = sum_type::defer!(Foo as third; First | Third => |ref item| item.to_string());
+///
+/// assert_eq!(got, "Hello World");
+///
+/// // mutate the variant in place
+/// sum_type::defer!(Foo as third;
+///     First | Second | Third => |ref mut item| {
+///         *item = Default::default();
+///     }
+/// );
+/// assert_eq!(third, Foo::Third(String::new()));
+/// ```
+///
+/// The `defer!()` macro will panic if it encounters an unhandled variant.
+///
+/// ```rust,should_panic
+/// sum_type::sum_type! {
+///     #[derive(Debug, PartialEq)]
+///     pub enum Foo {
+///         First(u32),
+///         Second(f64),
+///         Third(String),
+///     }
+/// }
+///
+/// let mut first = Foo::First(42);
+///
+/// sum_type::defer!(Foo as first; Second | Third => |ref _dont_care| ());
+/// ```
+#[macro_export]
+macro_rules! defer {
+    ($kind:ident as $variable:expr; $( $variant:ident )|* => |ref $item:ident| $exec:expr) => {
+        $crate::defer!(@foreach_variant $kind, $variable;
+            $(
+                $kind::$variant(ref $item) => $exec
+            ),*
+        )
+    };
+    ($kind:ident as $variable:expr; $( $variant:ident )|* => |ref mut $item:ident| $exec:expr) => {
+        $crate::defer!(@foreach_variant $kind, $variable;
+            $(
+                $kind::$variant(ref mut $item) => $exec
+            ),*
+        )
+    };
+    (@foreach_variant $kind:ident, $variable:expr; $( $pattern:pat => $exec:expr ),*) => {
+        match $variable {
+            $(
+                $pattern => $exec,
+            )*
+            #[allow(unreachable_patterns)]
+            _ => unreachable!("Unexpected variant, {}, for {}",
+                <_ as $crate::SumType>::variant(&$variable),
+                stringify!($kind)),
+        }
+    }
+}
 
 /// An example of the generated sum type.
 #[cfg(feature = "generated_example")]
