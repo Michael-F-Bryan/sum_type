@@ -421,6 +421,7 @@ macro_rules! sum_type {
 /// It will expand to roughly the following:
 ///
 /// ```rust
+/// # #![cfg_attr(feature = "try_from", feature(try_from))]
 /// sum_type::sum_type! {
 ///     #[derive(Debug, PartialEq)]
 ///     pub enum Foo {
@@ -442,6 +443,7 @@ macro_rules! sum_type {
 /// # Examples
 ///
 /// ```rust
+/// # #![cfg_attr(feature = "try_from", feature(try_from))]
 /// sum_type::sum_type! {
 ///     #[derive(Debug, PartialEq)]
 ///     pub enum Foo {
@@ -471,6 +473,7 @@ macro_rules! sum_type {
 /// The `defer!()` macro will panic if it encounters an unhandled variant.
 ///
 /// ```rust,should_panic
+/// # #![cfg_attr(feature = "try_from", feature(try_from))]
 /// sum_type::sum_type! {
 ///     #[derive(Debug, PartialEq)]
 ///     pub enum Foo {
