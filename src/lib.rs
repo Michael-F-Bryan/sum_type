@@ -334,11 +334,11 @@ macro_rules! __assert_multiple_variants {
 #[macro_export]
 macro_rules! __sum_type_impls {
     ($enum_name:ident, $( $name:ident => $variant_type:ty ),*) => (
-        __assert_multiple_variants!($enum_name, $( $name => $variant_type ),*);
+        $crate::__assert_multiple_variants!($enum_name, $( $name => $variant_type ),*);
 
-        __sum_type_from!($enum_name, $($name => $variant_type),*);
-        __sum_type_try_from!($enum_name, $($name => $variant_type),*);
-        __sum_type_trait!($enum_name, $($name => $variant_type),*);
+        $crate::__sum_type_from!($enum_name, $($name => $variant_type),*);
+        $crate::__sum_type_try_from!($enum_name, $($name => $variant_type),*);
+        $crate::__sum_type_trait!($enum_name, $($name => $variant_type),*);
     )
 }
 
@@ -361,7 +361,7 @@ macro_rules! sum_type {
             )*
         }
 
-        __sum_type_impls!($name, $( $var_name => $var_ty),*);
+        $crate::__sum_type_impls!($name, $( $var_name => $var_ty),*);
     };
     (
         $( #[$outer:meta] )* 
@@ -379,7 +379,7 @@ macro_rules! sum_type {
             )*
         }
 
-        __sum_type_impls!($name, $( $var_name => $var_ty),*);
+        $crate::__sum_type_impls!($name, $( $var_name => $var_ty),*);
     };
 
     // "lazy" variations which reuse give the variant the same name as its type.
@@ -391,7 +391,7 @@ macro_rules! sum_type {
                 $var_name:ident,
                 )*
         }) => {
-            sum_type!($(#[$outer])* pub enum $name { $( $(#[$inner])* $var_name($var_name), )* });
+            $crate::sum_type!($(#[$outer])* pub enum $name { $( $(#[$inner])* $var_name($var_name), )* });
     };
     (
         $( #[$outer:meta] )* 
@@ -401,7 +401,7 @@ macro_rules! sum_type {
                 $var_name:ident($var_ty:ty),
                 )*
         }) => {
-            sum_type!($(#[$outer])* enum $name { $( $(#[$inner])* $var_name($var_name), )* });
+            $crate::sum_type!($(#[$outer])* enum $name { $( $(#[$inner])* $var_name($var_name), )* });
     };
 }
 
