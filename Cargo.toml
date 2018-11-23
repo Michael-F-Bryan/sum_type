@@ -1,6 +1,6 @@
 [package]
 name = "sum_type"
-version = "0.1.1"
+version = "0.1.2-alpha.0"
 description = "A convenience macro for creating a wrapper enum which may be one of several distinct types."
 authors = ["Michael Bryan <michaelfbryan@gmail.com>"]
 repository = "https://github.com/Michael-F-Bryan/sum_type"
