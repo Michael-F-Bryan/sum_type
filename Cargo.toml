@@ -1,12 +1,15 @@
 [package]
 name = "sum_type"
-version = "0.1.2-alpha.0"
+version = "0.2.0"
 description = "A convenience macro for creating a wrapper enum which may be one of several distinct types."
 authors = ["Michael Bryan <michaelfbryan@gmail.com>"]
 repository = "https://github.com/Michael-F-Bryan/sum_type"
 categories = ["no-std", "rust-patterns"]
 keywords = ["sum", "variant", "enum", "either", "type"]
 license = "MIT"
+
+[package.metadata.docs.rs]
+all-features = true
 
 [badges]
 travis-ci = { repository = "Michael-F-Bryan/sum_type" }
@@ -16,6 +19,3 @@ travis-ci = { repository = "Michael-F-Bryan/sum_type" }
 [features]
 default = []
 generated_example = []
-
-[package.metadata.docs.rs]
-all-features = true
