@@ -13,7 +13,6 @@
 //! derive `From` for each variant.
 //!
 //! ```rust
-//! # #![cfg_attr(feature = "try_from", feature(try_from))]
 //! #[macro_use]
 //! extern crate sum_type;
 //!
@@ -39,7 +38,6 @@
 //! the same thing as its type.
 //!
 //! ```rust
-//! # #![cfg_attr(feature = "try_from", feature(try_from))]
 //! # #[macro_use]
 //! # extern crate sum_type;
 //! sum_type!{
@@ -56,7 +54,6 @@
 //! introspection and dynamic typing.
 //!
 //! ```rust
-//! # #![cfg_attr(feature = "try_from", feature(try_from))]
 //! # #[macro_use]
 //! # extern crate sum_type;
 //! use sum_type::SumType;
@@ -79,7 +76,6 @@
 //! following example will fail to compile.
 //!
 //! ```rust,compile_fail
-//! # #![cfg_attr(feature = "try_from", feature(try_from))]
 //! # fn main() {}
 //! #[macro_use]
 //! extern crate sum_type;
@@ -113,7 +109,6 @@
 //! means this will fail:
 //!
 //! ```rust,compile_fail
-//! # #![cfg_attr(feature = "try_from", feature(try_from))]
 //! # fn main() {}
 //! # #[macro_use]
 //! # extern crate sum_type;
@@ -128,7 +123,6 @@
 //! And so will this:
 //!
 //! ```rust,compile_fail
-//! # #![cfg_attr(feature = "try_from", feature(try_from))]
 //! # fn main() {}
 //! # #[macro_use]
 //! # extern crate sum_type;
@@ -140,16 +134,13 @@
 //! }
 //! ```
 //!
-//! # Feature Flags
+//! # Try From
 //!
-//! The `try_from` feature flag (disabled by default) will implement `TryFrom`
-//! to convert a from your sum type back back to one of its variant types.
+//! `TryFrom` is automatically implemented on your sum type to convert it back to one of its variant types.
 //!
 //! ```rust
-//! # #![cfg_attr(feature = "try_from", feature(try_from))]
 //! #[macro_use]
 //! extern crate sum_type;
-//! # #[cfg(feature = "try_from")]
 //! # fn main() {
 //! # sum_type! { #[derive(Debug, Clone, PartialEq)] pub enum MySumType {
 //! #         First(u32), Second(String), Third(Vec<u8>), } }
@@ -168,7 +159,6 @@
 //! assert_eq!(err.expected_variant, "Third");
 //! assert_eq!(err.actual_variant, "Second");
 //! # }
-//! # #[cfg(not(feature = "try_from"))] fn main() {}
 //! ```
 //!
 //! The `generated_example` feature flag will create an example of our
@@ -178,7 +168,6 @@
 //! [`SumType`]: trait.SumType.html
 
 #![no_std]
-#![cfg_attr(feature = "try_from", feature(try_from))]
 #![deny(
     missing_docs,
     missing_copy_implementations,
@@ -194,7 +183,6 @@ pub extern crate core as _core;
 use core::any::Any;
 
 /// The result of a failed conversion from `TryFrom`.
-#[cfg(feature = "try_from")]
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct InvalidType {
     /// The variant this conversion is valid for.
@@ -226,16 +214,6 @@ pub trait SumType {
     fn variant_is<T: Any>(&self) -> bool;
 }
 
-// If you're reading this... I'm sorry.
-
-#[cfg(not(feature = "try_from"))]
-#[doc(hidden)]
-#[macro_export]
-macro_rules! __sum_type_try_from {
-    ($($dont_care:tt)*) => {};
-}
-
-#[cfg(feature = "try_from")]
 #[doc(hidden)]
 #[macro_export]
 macro_rules! __sum_type_try_from {
@@ -421,7 +399,6 @@ macro_rules! sum_type {
 /// It will expand to roughly the following:
 ///
 /// ```rust
-/// # #![cfg_attr(feature = "try_from", feature(try_from))]
 /// sum_type::sum_type! {
 ///     #[derive(Debug, PartialEq)]
 ///     pub enum Foo {
@@ -443,7 +420,6 @@ macro_rules! sum_type {
 /// # Examples
 ///
 /// ```rust
-/// # #![cfg_attr(feature = "try_from", feature(try_from))]
 /// sum_type::sum_type! {
 ///     #[derive(Debug, PartialEq)]
 ///     pub enum Foo {
@@ -473,7 +449,6 @@ macro_rules! sum_type {
 /// The `defer!()` macro will panic if it encounters an unhandled variant.
 ///
 /// ```rust,should_panic
-/// # #![cfg_attr(feature = "try_from", feature(try_from))]
 /// sum_type::sum_type! {
 ///     #[derive(Debug, PartialEq)]
 ///     pub enum Foo {

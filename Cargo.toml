@@ -15,7 +15,6 @@ travis-ci = { repository = "Michael-F-Bryan/sum_type" }
 
 [features]
 default = []
-try_from = []
 generated_example = []
 
 [package.metadata.docs.rs]
